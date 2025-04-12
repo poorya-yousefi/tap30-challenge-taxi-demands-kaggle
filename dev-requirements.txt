@@ -1,6 +1,6 @@
 black[jupyter]==24.10.0 
 isort==6.0.1
 pre-commit==v4.2.0
-pandas==2.1.1
-matplotlib==3.8.0
+pandas==2.2.3
+matplotlib==v3.9.4
 scikit-learn==1.6.1

@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import joblib
+import mlflow
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import root_mean_squared_error
@@ -27,18 +28,37 @@ class ModelTraining:
 
     def run(self):
         logger.info("Model training process started...")
-        train_data, val_data = self.load_data()
-        model = self.create_model()
-        self.train_model(model, train_data)
-        self.evaluate_model(model, val_data)
-        self.save_model(model)
-        logger.info("Model training ended successfully!")
+        logger.info("mlflow operation started.")
+
+        mlflow.set_experiment("tap30-challenge-taxi-demands")
+        with mlflow.start_run():
+            mlflow.set_tag("model_type", "RandomForestRegressor")
+
+            train_data, val_data = self.load_data()
+            mlflow.log_artifact(self.train_data_path, "datasets")
+            mlflow.log_artifact(self.val_data_path, "datasets")
+
+            model = self.create_model()
+            self.train_model(model, train_data)
+            self.evaluate_model(model, val_data)
+            mlflow.log_metric("oob_score", self.oob_score)
+            mlflow.log_metric("rmse", self.rmse)
+
+            self.save_model(model)
+
+            mlflow.log_artifact(self.model_output_path, "models")
+
+            params = model.get_params()
+            mlflow.log_params(params)
+
+            logger.info("mlflow operation ended successfully.")
+            logger.info("Model training ended successfully!")
 
     def load_data(self):
-        train_data_dir = self.processed_dir / "train.csv"
-        val_data_dir = self.processed_dir / "validation.csv"
-        train_data = pd.read_csv(train_data_dir)
-        val_data = pd.read_csv(val_data_dir)
+        self.train_data_path = self.processed_dir / "train.csv"
+        self.val_data_path = self.processed_dir / "validation.csv"
+        train_data = pd.read_csv(self.train_data_path)
+        val_data = pd.read_csv(self.val_data_path)
 
         return train_data, val_data
 
@@ -71,5 +91,5 @@ class ModelTraining:
         logger.info(f"Root Mean Squared Error for validation data: {self.rmse}")
 
     def save_model(self, model):
-        save_path = self.model_output_dir / "rf.joblib"
-        joblib.dump(model, save_path, compress=("gzip", 3))
+        self.model_output_path = self.model_output_dir / "rf.joblib"
+        joblib.dump(model, self.model_output_path, compress=("gzip", 3))
