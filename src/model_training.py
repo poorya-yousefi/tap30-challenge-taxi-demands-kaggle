@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import joblib
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import root_mean_squared_error
@@ -7,6 +8,13 @@ from sklearn.metrics import root_mean_squared_error
 from logger import get_logger
 
 logger = get_logger(__name__)
+
+"""
+This module is responsible for training the model using the processed data.
+It includes loading the data, creating the model, training it,
+evaluating its performance, and saving the trained model.
+The model used is a Random Forest Regressor.
+"""
 
 
 class ModelTraining:
@@ -16,13 +24,14 @@ class ModelTraining:
         self.processed_dir = artifact_dir / "processed"
         self.model_output_dir = artifact_dir / "models"
         self.model_output_dir.mkdir(parents=True, exist_ok=True)
-        logger.info("Model training process started...")
 
     def run(self):
+        logger.info("Model training process started...")
         train_data, val_data = self.load_data()
         model = self.create_model()
         self.train_model(model, train_data)
         self.evaluate_model(model, val_data)
+        self.save_model(model)
         logger.info("Model training ended successfully!")
 
     def load_data(self):
@@ -60,3 +69,7 @@ class ModelTraining:
 
         logger.info(f"Out-of-Bag Score: {self.oob_score}")
         logger.info(f"Root Mean Squared Error for validation data: {self.rmse}")
+
+    def save_model(self, model):
+        save_path = self.model_output_dir / "rf.joblib"
+        joblib.dump(model, save_path, compress=("gzip", 3))
