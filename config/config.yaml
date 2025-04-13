@@ -12,3 +12,9 @@ model_training:
   n_estimators: 500 # number of trees
   max_samples: 0.63 # If bootstrap is True, the number of samples to draw from X to train each base estimator
   n_jobs: -1 #The number of jobs to run in parallel. -1 means using all processors.
+
+web_api:
+  host: "0.0.0.0"
+  port: 8083
+  model_output_dir: "artifacts/models"
+  model_name: "rf.joblib"

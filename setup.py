@@ -15,9 +15,9 @@ with open("requirements.txt") as f:
     requirements = f.read().splitlines()
 
 setup(
-    name="my_package",
-    version="0.1",
-    author="Your Name",
+    name="tap30-taxi-demands-kaggle",
+    version="0.1.0",
+    author="Poorya Yousefi",
     packages=find_packages(),
     install_requires=requirements,
 )
