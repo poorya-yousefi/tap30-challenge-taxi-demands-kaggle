@@ -1,0 +1,17 @@
+.venv/
+logs/
+*.joblib
+
+.DS_Store
+*.egg-info/
+*.egg
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+mlruns/
+
+.git/
+.idea/
+.vscode/

@@ -1,0 +1,10 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - WEB_HOST=localhost
+      - WEB_PORT=8083
+    ports:
+      - "8080:8083"
